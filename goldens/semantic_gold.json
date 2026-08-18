@@ -1,0 +1,15 @@
+{
+  "contract": "entailment",
+  "version": "v1",
+  "note": "Held-out labeled cases for evaluating an entailment JUDGE before trusting it (panel: eval the judge as its own confusion matrix). Grow from real 'factual'-chipped edits + shadow mining.",
+  "cases": [
+    { "id": "ent-supported-direct", "claim": "Apex returned 12.4% net in 2024", "evidence": ["Apex Growth returned 12.4% net of fees in FY2024."], "expected": "supported" },
+    { "id": "ent-supported-paraphrase", "claim": "The fund beat its benchmark", "evidence": ["Apex returned 12.4% vs the benchmark 9.8%."], "expected": "supported" },
+    { "id": "ent-supported-inference", "claim": "Assets grew year over year", "evidence": ["AUM was $950M at end-2023 and $1.2B at end-2024."], "expected": "supported" },
+    { "id": "ent-violated-superlative", "claim": "Apex is the best-performing fund in the world", "evidence": ["Apex returned 12.4% net in FY2024."], "expected": "violated" },
+    { "id": "ent-violated-contradiction", "claim": "Apex returned 20% in 2024", "evidence": ["Apex returned 12.4% net in FY2024."], "expected": "violated" },
+    { "id": "ent-violated-unsupported-specific", "claim": "Apex has 5,000 institutional clients", "evidence": ["Apex returned 12.4% net in FY2024."], "expected": "violated" },
+    { "id": "ent-violated-modality", "claim": "The fund guarantees a 12% return", "evidence": ["Apex returned 12.4% net in FY2024."], "expected": "violated" },
+    { "id": "ent-abstain-insufficient", "claim": "The fund outperformed most peers", "evidence": ["Apex returned 12.4% net in FY2024."], "expected": "abstain" }
+  ]
+}
