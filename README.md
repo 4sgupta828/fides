@@ -36,8 +36,6 @@ knowledge), never over fabrication. Style is not a faithfulness axis and never e
 6. ✅ Grounded-generation stub — `GroundedGenerator`: `plan → draft → verify(Gate) → repair`
    (verifier as critic; `Finding.reason` is the repair instruction). Injectable drafter/repairer.
 7. Wire real LLM drafter/judges; land in a Python consumer; the video repair loop.
-4. The marketing policy-table dial.
-5. Generation *on top*: `plan → retrieve → draft → verify → repair` (the verifier as critic).
 
 ## Test
 ```
