@@ -17,6 +17,9 @@ from .semantic.entailment import EntailmentCheck, EntailmentJudge, abstaining_ju
 from .semantic.congruence import CongruenceCheck, CongruenceJudge, abstaining_congruence_judge
 from .quality import quality_signals, goodhart_tripwire, HEDGE_LEXICON, leaked_values, value_present_in_prose
 from .text import QuoteCheck, verify_span, verify_span_any, normalize_for_span
+from .semantic.robust import JudgeCache, make_cached_judge, with_retry, make_chunked_batch_judge
+from .evidence import OriginScopedEvidence
+from .authority import all_proposal_grade
 from .numeric.audit import build_audit_report, render_audit_markdown
 from .harness import run_gate_eval, format_gate_eval, wilson, gold_should_publish
 from .gate import Gate, GateReport, SpanDecision, format_gate_report
@@ -33,6 +36,8 @@ __all__ = [
     "CongruenceCheck", "CongruenceJudge", "abstaining_congruence_judge",
     "quality_signals", "goodhart_tripwire", "HEDGE_LEXICON", "leaked_values", "value_present_in_prose",
     "QuoteCheck", "verify_span", "verify_span_any", "normalize_for_span",
+    "JudgeCache", "make_cached_judge", "with_retry", "make_chunked_batch_judge",
+    "OriginScopedEvidence", "all_proposal_grade",
     "build_audit_report", "render_audit_markdown",
     "run_gate_eval", "format_gate_eval", "wilson", "gold_should_publish",
     "Gate", "GateReport", "SpanDecision", "format_gate_report",

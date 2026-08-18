@@ -16,6 +16,7 @@ Groundedness = str   # 'in_corpus' | 'true_uncited' | 'false' | 'abstain'
 SurfaceTier = str    # 'compliance' | 'marketing'  (extensible)
 Severity = str       # 'low' | 'medium' | 'high' | 'critical'
 Action = str         # 'keep' | 'flag' | 'downgrade' | 'hold' | 'drop'
+# numeric FailCodes are strings on the verdict; 'raw_mismatch' (below) is the verbatim/wrong-cell one.
 
 GROUNDEDNESS = ("in_corpus", "true_uncited", "false", "abstain")
 ACTIONS = ("keep", "flag", "downgrade", "hold", "drop")

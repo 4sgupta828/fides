@@ -33,9 +33,9 @@ def _default_client():
     return OpenAI()
 
 
-def _chat_json(client, model: str, system: str, user: str) -> dict:
+def _chat_json(client, model: str, system: str, user: str, timeout: float = 30.0) -> dict:
     res = client.chat.completions.create(
-        model=model, temperature=0, response_format={"type": "json_object"},
+        model=model, temperature=0, response_format={"type": "json_object"}, timeout=timeout,
         messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
     )
     return json.loads(res.choices[0].message.content or "{}")
@@ -50,11 +50,11 @@ def _norm_verdict(v) -> str:
     return v if v in _VERDICTS else "abstain"
 
 
-def make_openai_entailment_judge(model: str = "gpt-4o-mini", client=None):
+def make_openai_entailment_judge(model: str = "gpt-4o-mini", client=None, timeout: float = 30.0):
     """Returns an EntailmentJudge callable → {verdict, confidence, reason}."""
     def judge(claim_text: str, evidence_texts: List[str]) -> dict:
         try:
-            data = _chat_json(client or _default_client(), model, _ENTAIL_SYSTEM, _fmt(claim_text, evidence_texts))
+            data = _chat_json(client or _default_client(), model, _ENTAIL_SYSTEM, _fmt(claim_text, evidence_texts), timeout)
             return {"verdict": _norm_verdict(data.get("verdict")),
                     "confidence": float(data.get("confidence", 0.5)),
                     "reason": str(data.get("reason", ""))}
@@ -63,11 +63,11 @@ def make_openai_entailment_judge(model: str = "gpt-4o-mini", client=None):
     return judge
 
 
-def make_openai_congruence_judge(model: str = "gpt-4o-mini", client=None):
+def make_openai_congruence_judge(model: str = "gpt-4o-mini", client=None, timeout: float = 30.0):
     """Returns a CongruenceJudge callable → {on_subject, kind_ok, confidence, reason}."""
     def judge(claim_text: str, evidence_texts: List[str]) -> dict:
         try:
-            data = _chat_json(client or _default_client(), model, _CONGRUENCE_SYSTEM, _fmt(claim_text, evidence_texts))
+            data = _chat_json(client or _default_client(), model, _CONGRUENCE_SYSTEM, _fmt(claim_text, evidence_texts), timeout)
             return {"on_subject": _norm_verdict(data.get("on_subject")),
                     "kind_ok": _norm_verdict(data.get("kind_ok")),
                     "confidence": float(data.get("confidence", 0.5)),

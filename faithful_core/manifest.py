@@ -42,6 +42,8 @@ class GateManifest:
     min_confidence: float = 0.0
     strict_surfaces: FrozenSet[str] = frozenset({"compliance"})          # unresolved ENTITY → fail
     require_period_surfaces: FrozenSet[str] = frozenset()                 # unresolved PERIOD → fail (opt-in)
+    verbatim_surfaces: FrozenSet[str] = frozenset()                      # number must match source VERBATIM (table cells)
+    proposal_source_classes: FrozenSet[str] = frozenset()               # authority floor: which source classes are proposal-grade
     enabled_dimensions: FrozenSet[str] = frozenset(
         {"numeric", "quote", "entailment", "attribution", "overgeneralization", "misinterpretation"}
     )

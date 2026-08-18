@@ -180,6 +180,22 @@ def _period_congruence(ctx_period: Optional[str], fp: dict) -> str:
     return "match"
 
 
+_RAW_CORE = re.compile(r"\d[\d,]*(?:\.\d+)?")
+
+
+def _emitted_raw_present(emitted_raw: str, source_text: str) -> bool:
+    """Does the emitted number appear VERBATIM (standalone, un-normalized) in the source text? This
+    is factra's locator cell re-read (verifier.py:134-137): $1.79 must NOT satisfy a source cell of
+    $1.790 — the whole point is to catch that display drift / wrong-but-real sibling cell that the
+    tolerant canonical calculus smooths over. Standalone boundary so 1.79 ≠ inside 1.790."""
+    m = _RAW_CORE.search(emitted_raw)
+    if not m:
+        return False
+    core = m.group(0).replace(",", "")
+    hay = re.sub(r"\s+", " ", source_text).replace(",", "")
+    return re.search(r"(?<![\d.])" + re.escape(core) + r"(?![\d])", hay) is not None
+
+
 def _fail(code, bound=None):
     return {"ok": False, "code": code, "bound_fact_ids": bound or [], "emitted_canonical": None,
             "source_canonical": None, "locators": []}
@@ -187,6 +203,7 @@ def _fail(code, bound=None):
 
 def verify_claim(claim: dict, facts_by_id: dict, opts: dict, vocab: UnitVocab = DEFAULT_VOCAB) -> dict:
     strict = opts.get("strict", False); strict_period = opts.get("strict_period", False)
+    verbatim = opts.get("verbatim", False)
     min_conf = opts.get("minConfidence", 0); rounding = opts.get("rounding", True)
     emitted = parse_quantity(claim["emitted"], vocab)
     if not emitted:
@@ -239,6 +256,11 @@ def verify_claim(claim: dict, facts_by_id: dict, opts: dict, vocab: UnitVocab = 
         return _fail("basis_mismatch", [fact["id"]])
     if fact["confidence"] < min_conf:
         return _fail("low_confidence", [fact["id"]])
+    # VERBATIM (opt-in, e.g. table-cell surfaces): the emitted number must be the EXACT source string,
+    # not merely canonically-equal — catches $1.79 vs $1.790 display drift / wrong sibling cell. Do
+    # NOT enable on prose surfaces where legitimate rounding ($1.2B from $1,234,000,000) is expected.
+    if verbatim and fact.get("locatorText") and not _emitted_raw_present(emitted["raw"], fact["locatorText"]):
+        r = _fail("raw_mismatch", [fact["id"]]); r["emitted_canonical"] = emitted["canonical"]; return r
     if strict and ent == "unchecked":
         return _fail("entity_unresolved", [fact["id"]])
     # period-strictness is a SEPARATE opt-in knob (panel: too aggressive to auto-apply on compliance).

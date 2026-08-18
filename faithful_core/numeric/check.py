@@ -20,6 +20,7 @@ class NumericCheck:
         opts = {
             "strict": surface in manifest.strict_surfaces,
             "strict_period": surface in manifest.require_period_surfaces,
+            "verbatim": surface in manifest.verbatim_surfaces,
             "minConfidence": manifest.min_confidence,
             "rounding": evidence.get("rounding", True),
         }
