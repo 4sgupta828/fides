@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://faithful-core/contract/finding.schema.json",
+  "title": "Finding",
+  "description": "The language-neutral verdict currency emitted by every Check. Single source of truth; the Python and TypeScript implementations both conform to this shape and to the golden-vector corpora.",
+  "type": "object",
+  "required": ["check_id", "dimension", "kind", "span", "groundedness"],
+  "properties": {
+    "check_id": { "type": "string" },
+    "dimension": { "enum": ["numeric", "quote", "attribution", "overgeneralization", "misinterpretation", "slop"] },
+    "kind": { "enum": ["deterministic", "llm_judge"] },
+    "span": {
+      "type": "object",
+      "required": ["text", "surface"],
+      "properties": {
+        "text": { "type": "string" },
+        "surface": { "type": "string", "description": "surface tier, e.g. compliance | marketing" },
+        "start": { "type": ["integer", "null"] },
+        "end": { "type": ["integer", "null"] }
+      }
+    },
+    "groundedness": {
+      "enum": ["in_corpus", "true_uncited", "false", "abstain"],
+      "description": "SURFACE-INVARIANT: labeled once, every tier derived by policy."
+    },
+    "severity": { "enum": ["low", "medium", "high", "critical"] },
+    "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+    "reason": { "type": "string" },
+    "source_locators": { "type": "array", "items": { "type": "string" } }
+  },
+  "$comment": "IMMOVABLE POLICY INVARIANT (not expressible in JSON Schema, enforced in code): a finding with kind=deterministic AND groundedness=false ALWAYS resolves to action=drop; no policy table may override it."
+}

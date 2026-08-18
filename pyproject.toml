@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "faithful-core"
+version = "0.1.0"
+description = "Domain-agnostic faithfulness engine: verify AI-generated content against its source."
+readme = "README.md"
+requires-python = ">=3.9"
+# ZERO runtime dependencies — the calculus is pure stdlib, so it drops into any consumer (Noesis/
+# Eigen 3.13 kernels, a service, a notebook) without a dependency negotiation.
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[tool.setuptools.packages.find]
+include = ["faithful_core*"]

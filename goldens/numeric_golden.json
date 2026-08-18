@@ -1,0 +1,813 @@
+{
+  "contract": "numeric-ledger",
+  "version": "v1",
+  "canonicalLang": "ts",
+  "cases": [
+    {
+      "id": "direct-ok",
+      "category": "direct",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "72%",
+            "subject": "Fund A",
+            "metric": "net return",
+            "period": "FY2024"
+          }
+        ],
+        "claim": {
+          "emitted": "72%",
+          "binding": {
+            "kind": "source",
+            "factId": "f1"
+          },
+          "context": {
+            "subject": "Fund A",
+            "metric": "net return",
+            "period": "FY2024"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": true,
+        "code": "ok",
+        "emittedCanonical": 72,
+        "sourceCanonical": 72
+      }
+    },
+    {
+      "id": "sibling-metric",
+      "category": "sibling_cell",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "72%",
+            "subject": "Fund A",
+            "metric": "net return"
+          },
+          {
+            "id": "f2",
+            "value": "72%",
+            "subject": "Fund A",
+            "metric": "expense ratio"
+          }
+        ],
+        "claim": {
+          "emitted": "72%",
+          "binding": {
+            "kind": "source",
+            "factId": "f2"
+          },
+          "context": {
+            "subject": "Fund A",
+            "metric": "net return"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": false,
+        "code": "entity_mismatch",
+        "emittedCanonical": null,
+        "sourceCanonical": null
+      }
+    },
+    {
+      "id": "basis-net-vs-gross",
+      "category": "sibling_cell",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "8%",
+            "subject": "Fund A",
+            "metric": "return",
+            "basis": "gross"
+          }
+        ],
+        "claim": {
+          "emitted": "8%",
+          "binding": {
+            "kind": "source",
+            "factId": "f1"
+          },
+          "context": {
+            "subject": "Fund A",
+            "metric": "return",
+            "basis": "net"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": false,
+        "code": "basis_mismatch",
+        "emittedCanonical": null,
+        "sourceCanonical": null
+      }
+    },
+    {
+      "id": "metric-containment",
+      "category": "sibling_cell",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "5%",
+            "subject": "Fund A",
+            "metric": "return of capital"
+          }
+        ],
+        "claim": {
+          "emitted": "5%",
+          "binding": {
+            "kind": "source",
+            "factId": "f1"
+          },
+          "context": {
+            "subject": "Fund A",
+            "metric": "return"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": false,
+        "code": "entity_mismatch",
+        "emittedCanonical": null,
+        "sourceCanonical": null
+      }
+    },
+    {
+      "id": "unit-pct-vs-usd",
+      "category": "unit_swap",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "72%",
+            "subject": "Fund A",
+            "metric": "net return"
+          }
+        ],
+        "claim": {
+          "emitted": "$72M",
+          "binding": {
+            "kind": "source",
+            "factId": "f1"
+          },
+          "context": {
+            "subject": "Fund A",
+            "metric": "net return"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": false,
+        "code": "unit_mismatch",
+        "emittedCanonical": null,
+        "sourceCanonical": null
+      }
+    },
+    {
+      "id": "unit-currency-code",
+      "category": "unit_swap",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "$5M",
+            "subject": "ACME",
+            "metric": "revenue"
+          }
+        ],
+        "claim": {
+          "emitted": "€5M",
+          "binding": {
+            "kind": "source",
+            "factId": "f1"
+          },
+          "context": {
+            "subject": "ACME",
+            "metric": "revenue"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": false,
+        "code": "unit_mismatch",
+        "emittedCanonical": null,
+        "sourceCanonical": null
+      }
+    },
+    {
+      "id": "value-off",
+      "category": "value",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "72%",
+            "subject": "Fund A",
+            "metric": "net return"
+          }
+        ],
+        "claim": {
+          "emitted": "75%",
+          "binding": {
+            "kind": "source",
+            "factId": "f1"
+          },
+          "context": {
+            "subject": "Fund A",
+            "metric": "net return"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": false,
+        "code": "value_mismatch",
+        "emittedCanonical": 75,
+        "sourceCanonical": 72
+      }
+    },
+    {
+      "id": "bps-distinct",
+      "category": "bps",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "10 bps",
+            "subject": "Fund A",
+            "metric": "fee"
+          }
+        ],
+        "claim": {
+          "emitted": "40 bps",
+          "binding": {
+            "kind": "source",
+            "factId": "f1"
+          },
+          "context": {
+            "subject": "Fund A",
+            "metric": "fee"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": false,
+        "code": "value_mismatch",
+        "emittedCanonical": 0.4,
+        "sourceCanonical": 0.1
+      }
+    },
+    {
+      "id": "bps-ok",
+      "category": "bps",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "40 bps",
+            "subject": "Fund A",
+            "metric": "fee"
+          }
+        ],
+        "claim": {
+          "emitted": "40 bps",
+          "binding": {
+            "kind": "source",
+            "factId": "f1"
+          },
+          "context": {
+            "subject": "Fund A",
+            "metric": "fee"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": true,
+        "code": "ok",
+        "emittedCanonical": 0.4,
+        "sourceCanonical": 0.4
+      }
+    },
+    {
+      "id": "round-ok",
+      "category": "rounding",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "71.6%",
+            "subject": "Fund A",
+            "metric": "net return"
+          }
+        ],
+        "claim": {
+          "emitted": "72%",
+          "binding": {
+            "kind": "source",
+            "factId": "f1"
+          },
+          "context": {
+            "subject": "Fund A",
+            "metric": "net return"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": true,
+        "code": "ok",
+        "emittedCanonical": 72,
+        "sourceCanonical": 71.6
+      }
+    },
+    {
+      "id": "round-too-far",
+      "category": "rounding",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "72.6%",
+            "subject": "Fund A",
+            "metric": "net return"
+          }
+        ],
+        "claim": {
+          "emitted": "72%",
+          "binding": {
+            "kind": "source",
+            "factId": "f1"
+          },
+          "context": {
+            "subject": "Fund A",
+            "metric": "net return"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": false,
+        "code": "value_mismatch",
+        "emittedCanonical": 72,
+        "sourceCanonical": 72.6
+      }
+    },
+    {
+      "id": "magnitude-round-ok",
+      "category": "rounding",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "$1.23B",
+            "subject": "ACME",
+            "metric": "revenue"
+          }
+        ],
+        "claim": {
+          "emitted": "$1.2B",
+          "binding": {
+            "kind": "source",
+            "factId": "f1"
+          },
+          "context": {
+            "subject": "ACME",
+            "metric": "revenue"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": true,
+        "code": "ok",
+        "emittedCanonical": 1200000000,
+        "sourceCanonical": 1230000000
+      }
+    },
+    {
+      "id": "period-q-vs-fy",
+      "category": "period",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "8%",
+            "subject": "Fund A",
+            "metric": "return",
+            "period": "FY2024"
+          }
+        ],
+        "claim": {
+          "emitted": "8%",
+          "binding": {
+            "kind": "source",
+            "factId": "f1"
+          },
+          "context": {
+            "subject": "Fund A",
+            "metric": "return",
+            "period": "Q2 2024"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": false,
+        "code": "period_mismatch",
+        "emittedCanonical": null,
+        "sourceCanonical": null
+      }
+    },
+    {
+      "id": "period-half-vs-fy",
+      "category": "period",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "8%",
+            "subject": "Fund A",
+            "metric": "return",
+            "period": "FY2024"
+          }
+        ],
+        "claim": {
+          "emitted": "8%",
+          "binding": {
+            "kind": "source",
+            "factId": "f1"
+          },
+          "context": {
+            "subject": "Fund A",
+            "metric": "return",
+            "period": "H1 2024"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": false,
+        "code": "period_mismatch",
+        "emittedCanonical": null,
+        "sourceCanonical": null
+      }
+    },
+    {
+      "id": "deriv-growth-ok",
+      "category": "derivation",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "5,000",
+            "subject": "ARR",
+            "metric": "customers"
+          },
+          {
+            "id": "f2",
+            "value": "7,000",
+            "subject": "ARR",
+            "metric": "customers"
+          }
+        ],
+        "claim": {
+          "emitted": "40%",
+          "binding": {
+            "kind": "derived",
+            "derivation": {
+              "op": "growth_pct",
+              "operandFactIds": [
+                "f1",
+                "f2"
+              ]
+            }
+          },
+          "context": {
+            "subject": "ARR"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": true,
+        "code": "ok",
+        "emittedCanonical": 40,
+        "sourceCanonical": 40
+      }
+    },
+    {
+      "id": "deriv-growth-wrong",
+      "category": "derivation",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "5,000",
+            "subject": "ARR",
+            "metric": "customers"
+          },
+          {
+            "id": "f2",
+            "value": "7,000",
+            "subject": "ARR",
+            "metric": "customers"
+          }
+        ],
+        "claim": {
+          "emitted": "45%",
+          "binding": {
+            "kind": "derived",
+            "derivation": {
+              "op": "growth_pct",
+              "operandFactIds": [
+                "f1",
+                "f2"
+              ]
+            }
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": false,
+        "code": "derivation_mismatch",
+        "emittedCanonical": 45,
+        "sourceCanonical": 40
+      }
+    },
+    {
+      "id": "deriv-incoherent-subject",
+      "category": "derivation",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "5,000",
+            "subject": "Fund A",
+            "metric": "customers"
+          },
+          {
+            "id": "f2",
+            "value": "7,000",
+            "subject": "Fund B",
+            "metric": "customers"
+          }
+        ],
+        "claim": {
+          "emitted": "40%",
+          "binding": {
+            "kind": "derived",
+            "derivation": {
+              "op": "growth_pct",
+              "operandFactIds": [
+                "f1",
+                "f2"
+              ]
+            }
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": false,
+        "code": "operands_incoherent",
+        "emittedCanonical": null,
+        "sourceCanonical": null
+      }
+    },
+    {
+      "id": "deriv-unit-mislabel",
+      "category": "derivation",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "5,000",
+            "subject": "ARR",
+            "metric": "customers"
+          },
+          {
+            "id": "f2",
+            "value": "7,000",
+            "subject": "ARR",
+            "metric": "customers"
+          }
+        ],
+        "claim": {
+          "emitted": "$40M",
+          "binding": {
+            "kind": "derived",
+            "derivation": {
+              "op": "growth_pct",
+              "operandFactIds": [
+                "f1",
+                "f2"
+              ]
+            }
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": false,
+        "code": "unit_mismatch",
+        "emittedCanonical": null,
+        "sourceCanonical": null
+      }
+    },
+    {
+      "id": "deriv-annualize-ok",
+      "category": "derivation",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "$350K",
+            "subject": "ACME",
+            "metric": "MRR"
+          }
+        ],
+        "claim": {
+          "emitted": "$4.2M",
+          "binding": {
+            "kind": "derived",
+            "derivation": {
+              "op": "annualize",
+              "operandFactIds": [
+                "f1"
+              ]
+            }
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": true,
+        "code": "ok",
+        "emittedCanonical": 4200000,
+        "sourceCanonical": 4200000
+      }
+    },
+    {
+      "id": "deriv-missing-operand",
+      "category": "derivation",
+      "input": {
+        "facts": [
+          {
+            "id": "f2",
+            "value": "7,000",
+            "subject": "ARR",
+            "metric": "customers"
+          }
+        ],
+        "claim": {
+          "emitted": "40%",
+          "binding": {
+            "kind": "derived",
+            "derivation": {
+              "op": "growth_pct",
+              "operandFactIds": [
+                "ghost",
+                "f2"
+              ]
+            }
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": false,
+        "code": "derivation_unverifiable",
+        "emittedCanonical": null,
+        "sourceCanonical": null
+      }
+    },
+    {
+      "id": "unbound",
+      "category": "binding",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "72%",
+            "subject": "Fund A",
+            "metric": "net return"
+          }
+        ],
+        "claim": {
+          "emitted": "99%",
+          "binding": {
+            "kind": "unbound"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": false,
+        "code": "unbound",
+        "emittedCanonical": null,
+        "sourceCanonical": null
+      }
+    },
+    {
+      "id": "fact-missing",
+      "category": "binding",
+      "input": {
+        "facts": [],
+        "claim": {
+          "emitted": "72%",
+          "binding": {
+            "kind": "source",
+            "factId": "nope"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": false,
+        "code": "fact_missing",
+        "emittedCanonical": null,
+        "sourceCanonical": null
+      }
+    },
+    {
+      "id": "strict-entity",
+      "category": "strict",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "72%",
+            "subject": "Fund A",
+            "metric": "net return"
+          }
+        ],
+        "claim": {
+          "emitted": "72%",
+          "binding": {
+            "kind": "source",
+            "factId": "f1"
+          },
+          "context": {}
+        },
+        "opts": {
+          "strict": true
+        }
+      },
+      "expected": {
+        "ok": false,
+        "code": "entity_unresolved",
+        "emittedCanonical": null,
+        "sourceCanonical": null
+      }
+    },
+    {
+      "id": "low-confidence",
+      "category": "confidence",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "72%",
+            "subject": "Fund A",
+            "metric": "net return",
+            "confidence": 0.3
+          }
+        ],
+        "claim": {
+          "emitted": "72%",
+          "binding": {
+            "kind": "source",
+            "factId": "f1"
+          },
+          "context": {
+            "subject": "Fund A",
+            "metric": "net return"
+          }
+        },
+        "opts": {
+          "minConfidence": 0.6
+        }
+      },
+      "expected": {
+        "ok": false,
+        "code": "low_confidence",
+        "emittedCanonical": null,
+        "sourceCanonical": null
+      }
+    }
+  ]
+}
