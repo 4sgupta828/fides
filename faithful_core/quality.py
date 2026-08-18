@@ -37,6 +37,33 @@ def quality_signals(text: str) -> dict:
     }
 
 
+# --- prose value-leak audit (absorbed from factra claim_prose_audit.py) ---------------------------
+# After a claim is WITHHELD, its number can still survive in the shipped prose. Police value-shaped
+# tokens only (currency/decimal/percent/bps) — NEVER bare years/counts, which are too common
+# (factra claim_prose_audit.py:23-25). Standalone-boundary matching so "190.28" can't match inside
+# "1190.28".
+_DIGIT_CORE = re.compile(r"\d[\d,]*(?:\.\d+)?")
+_VALUE_SHAPED = re.compile(r"[$€£¥₹%]|\bbps\b|\.\d|\bx\b", re.I)
+
+
+def value_present_in_prose(prose: str, value_str: str) -> bool:
+    """Does `value_str`'s numeric core appear as a standalone number in `prose`? Only for value-shaped
+    tokens (has a currency/percent/bps/decimal marker); a bare integer/year returns False."""
+    if not _VALUE_SHAPED.search(value_str):
+        return False
+    m = _DIGIT_CORE.search(value_str)
+    if not m:
+        return False
+    core = m.group(0).replace(",", "")
+    hay = prose.replace(",", "")
+    return re.search(r"(?<![\d.])" + re.escape(core) + r"(?![\d])", hay) is not None
+
+
+def leaked_values(prose: str, withheld_values) -> list:
+    """Withheld numbers that nonetheless survived in the published prose — a fabrication leak."""
+    return [v for v in withheld_values if value_present_in_prose(prose, v)]
+
+
 def goodhart_tripwire(before: dict, after: dict, escape_improved: bool) -> dict:
     """The paired tripwire: fabrication went down BUT the text got vaguer (less concrete info) AND
     more hedged. That combination means the loop is dodging the gate, not improving faithfulness."""

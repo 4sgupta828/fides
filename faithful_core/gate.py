@@ -7,9 +7,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-from .finding import Finding, compose_decision, is_published, Action
+from .finding import Finding, ContentSpan, compose_decision, is_published, Action
 from .manifest import GateManifest, DEFAULT_MANIFEST
-from .quality import quality_signals
+from .quality import quality_signals, leaked_values
 
 
 @dataclass
@@ -57,28 +57,40 @@ class Gate:
     def run(self, spans: List[dict]) -> GateReport:
         decisions: List[SpanDecision] = []
         by_action = {}
+        withheld_values: List[str] = []
         for span in spans:
             surface = span.get("surface", "compliance")
             findings: List[Finding] = []
             for chk in self.checks:
-                if getattr(chk, "dimension", None) and chk.dimension not in self.manifest.enabled_dimensions:
-                    # a check may emit multiple dimensions; run it unless ALL its dims are disabled
-                    pass
                 findings.extend(self._run_check(chk, span, surface))
+            # FAIL-CLOSED coverage guard (absorbed from factra's fail-open/closed discipline): a span
+            # with content but NOTHING that could verify it is not auto-published — it abstains, so
+            # compliance holds it (marketing flags). Previously such a span silently kept (fail-open).
+            if not findings and (span.get("text") or span.get("numeric_claims")):
+                findings.append(Finding(check_id="coverage", dimension="coverage", kind="deterministic",
+                                        span=ContentSpan(text=span.get("text", "") or "?", surface=surface),
+                                        groundedness="abstain", severity="medium", confidence=0.0,
+                                        reason="no check could verify this span"))
             action, driver = compose_decision(findings, self.manifest.policy)
             by_action[action] = by_action.get(action, 0) + 1
+            published = is_published(action)
+            if not published:
+                for nc in span.get("numeric_claims", []):
+                    withheld_values.append(nc.get("emitted", ""))
             decisions.append(SpanDecision(
-                id=span.get("id", "?"), surface=surface, action=action, published=is_published(action),
+                id=span.get("id", "?"), surface=surface, action=action, published=published,
                 driver_dimension=(driver.dimension if driver else None),
                 driver_reason=(driver.reason if driver else ""), findings=findings,
             ))
         published = sum(1 for d in decisions if d.published)
-        # quality tripwire over the full published text (anti-slop, watched not optimized)
         pub_text = " ".join(s.get("text", "") for s, d in zip(spans, decisions) if d.published and s.get("text"))
+        # prose value-leak audit: a WITHHELD number must not survive in the published text.
+        leaks = leaked_values(pub_text, withheld_values)
         return GateReport(
             decisions=decisions,
             summary={"total": len(decisions), "published": published,
-                     "withheld": len(decisions) - published, "by_action": by_action},
+                     "withheld": len(decisions) - published, "by_action": by_action,
+                     "leaked_values": leaks},
             quality=quality_signals(pub_text) if pub_text else {},
         )
 

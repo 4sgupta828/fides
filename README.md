@@ -19,6 +19,15 @@ It is a **light platform**, not a heavy shared runtime (panel decision):
 
 Zero runtime dependencies, Python ≥ 3.9 — drops into any consumer.
 
+## Absorbed from factra (battle-tested)
+- **QuoteCheck** — a deterministic, LLM-free no-fabrication span gate (3-tier: exact →
+  windowed difflib ≥0.95 → longest-contiguous rebind ≥70%, with typography+whitespace
+  normalization). Fills the `quote` dimension.
+- **Prose value-leak audit** — a withheld number must not survive in the published text
+  (`leaked_values`); polices currency/decimal/percent/bps only, never bare years/counts.
+- **Fail-closed coverage** — a span with content but nothing that can verify it now abstains
+  (compliance holds it) instead of silently publishing (was fail-open).
+
 ## The one immovable rule
 A **deterministic `false`** — a *proven* fabrication — is **always dropped**; no policy dial can
 override it. The dial ranges over *grounding strictness* (what happens to true-but-uncited general
