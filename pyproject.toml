@@ -3,7 +3,7 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "faithful-core"
+name = "fides"
 version = "0.1.0"
 description = "Domain-agnostic faithfulness engine: verify AI-generated content against its source."
 readme = "README.md"
@@ -16,7 +16,7 @@ dependencies = []
 dev = ["pytest>=7"]
 
 [tool.setuptools.packages.find]
-include = ["faithful_core*"]
+include = ["fides*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

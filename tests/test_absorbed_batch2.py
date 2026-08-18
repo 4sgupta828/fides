@@ -1,11 +1,11 @@
 """Tests for the second absorb batch: robust judges (tri-state/chunking/caching), verbatim raw-match,
 cross-origin guard, retry, authority floor."""
 import unittest
-from faithful_core import (
+from fides import (
     JudgeCache, make_cached_judge, with_retry, make_chunked_batch_judge,
     OriginScopedEvidence, all_proposal_grade, NumericCheck, GateManifest,
 )
-from faithful_core.numeric import ledger
+from fides.numeric import ledger
 
 
 # ---- #4 robust judges ----------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 """Entailment Check — injectable judge, fail-safe, and the llm_judge policy (never auto-drops)."""
 import unittest
-from faithful_core import EntailmentCheck, abstaining_judge, surface_policy, compose_decision, is_published
-from faithful_core.finding import ContentSpan
+from fides import EntailmentCheck, abstaining_judge, surface_policy, compose_decision, is_published
+from fides.finding import ContentSpan
 
 
 def judge_supported(claim_text, evidence_texts):

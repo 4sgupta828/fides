@@ -1,6 +1,6 @@
 """Anti-slop tripwires — deterministic quality signals, and the Goodhart pattern detector."""
 import unittest
-from faithful_core import quality_signals, goodhart_tripwire
+from fides import quality_signals, goodhart_tripwire
 
 
 class Quality(unittest.TestCase):

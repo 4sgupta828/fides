@@ -1,8 +1,8 @@
 """The Gate — one call, one verdict across all checks. Mixes deterministic numeric + llm_judge
 semantic checks over each span and composes a single publish decision."""
 import unittest
-from faithful_core import Gate, NumericCheck, EntailmentCheck, format_gate_report
-from faithful_core.numeric import ledger
+from fides import Gate, NumericCheck, EntailmentCheck, format_gate_report
+from fides.numeric import ledger
 
 
 def scripted(mapping):

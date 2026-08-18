@@ -1,8 +1,8 @@
 """Grounded generation: the verifier-as-critic repair loop. Deterministic drafter/repairer prove the
 plan→draft→verify→repair mechanism without any LLM."""
 import unittest
-from faithful_core import Gate, NumericCheck, GroundedGenerator
-from faithful_core.numeric import ledger
+from fides import Gate, NumericCheck, GroundedGenerator
+from fides.numeric import ledger
 
 
 FACTS = {f["id"]: f for f in [

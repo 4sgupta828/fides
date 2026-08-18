@@ -1,7 +1,7 @@
 """Property / fuzz-style invariants for the numeric ledger — deterministic (no RNG), broad coverage.
 These catch classes of regressions a fixed golden set won't."""
 import unittest
-from faithful_core.numeric import ledger
+from fides.numeric import ledger
 
 SAMPLES = [
     "72%", "0%", "100%", "72.4%", "40 bps", "5 bps", "$5", "$5.00", "$1.2B", "$1,200M",

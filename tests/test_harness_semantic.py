@@ -2,7 +2,7 @@
 llm_judge can't auto-drop, so on marketing a caught violation still ships (flag) = a measured
 escape; and a judge MISS escapes on both tiers. This is why judges stay flag-only until calibrated."""
 import unittest
-from faithful_core import EntailmentCheck, run_gate_eval
+from fides import EntailmentCheck, run_gate_eval
 
 
 def scripted(mapping):

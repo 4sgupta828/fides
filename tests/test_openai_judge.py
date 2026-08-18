@@ -2,8 +2,8 @@
 any live call; the wiring into EntailmentCheck/CongruenceCheck is exercised too."""
 import types
 import unittest
-from faithful_core.adapters.openai_judge import make_openai_entailment_judge, make_openai_congruence_judge
-from faithful_core import EntailmentCheck, CongruenceCheck
+from fides.adapters.openai_judge import make_openai_entailment_judge, make_openai_congruence_judge
+from fides import EntailmentCheck, CongruenceCheck
 
 
 def fake_client(content):

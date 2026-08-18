@@ -1,8 +1,8 @@
 """The platform bet in one test: the SAME calculus, tuned by a domain unit vocab, parses domain
 numbers differently — proving 'vocabulary is data, mechanism is kernel'."""
 import unittest
-from faithful_core.numeric import ledger
-from faithful_core.manifest import DEFAULT_VOCAB, INDIA_TECH_VOCAB, UnitVocab
+from fides.numeric import ledger
+from fides.manifest import DEFAULT_VOCAB, INDIA_TECH_VOCAB, UnitVocab
 
 
 class ManifestTuning(unittest.TestCase):

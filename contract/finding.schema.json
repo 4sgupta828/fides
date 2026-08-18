@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://faithful-core/contract/finding.schema.json",
+  "$id": "https://fides/contract/finding.schema.json",
   "title": "Finding",
   "description": "The language-neutral verdict currency emitted by every Check. Single source of truth; the Python and TypeScript implementations both conform to this shape and to the golden-vector corpora.",
   "type": "object",

@@ -1,6 +1,6 @@
 """QuoteCheck — a DETERMINISTIC no-fabrication text gate. A quoted span survives only if it is
 verbatim (fuzzy-tolerant) present in a CITED passage. LLM-free, so it grounds quotes without a judge
-and without spend. Absorbed from factra's hard span-check; fills faithful-core's empty 'quote'
+and without spend. Absorbed from factra's hard span-check; fills fides's empty 'quote'
 dimension. A failure is a proven fabrication → the policy invariant drops it."""
 from __future__ import annotations
 from typing import List

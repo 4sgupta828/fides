@@ -1,8 +1,8 @@
 """End-to-end: NumericCheck emits Findings → policy composes a publish decision; audit exports the
 source documentation for what shipped and what was withheld."""
 import unittest
-from faithful_core import NumericCheck, compose_decision, is_published, build_audit_report, render_audit_markdown, DEFAULT_MANIFEST
-from faithful_core.numeric import ledger
+from fides import NumericCheck, compose_decision, is_published, build_audit_report, render_audit_markdown, DEFAULT_MANIFEST
+from fides.numeric import ledger
 
 
 class CheckAndAudit(unittest.TestCase):

@@ -1,4 +1,4 @@
-# faithful-core
+# fides
 
 A domain-agnostic **faithfulness engine**: verify that AI-generated content is *true to its source*
 — catch fabricated numbers, misattributed quotes, over-generalizations, misinterpretations — before

@@ -1,4 +1,4 @@
-"""faithful-core — a domain-agnostic faithfulness engine: verify AI-generated content against its
+"""fides — a domain-agnostic faithfulness engine: verify AI-generated content against its
 source, one tunable Check at a time. The numeric ledger is the first, deterministic Check; semantic
 judges (entailment/congruence/slop) join later. A shared verdict-bus (Finding) + a golden-vector
 conformance corpus + a small per-use-case manifest. NOT a heavy shared runtime — a light platform.

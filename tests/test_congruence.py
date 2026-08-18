@@ -1,6 +1,6 @@
 """CongruenceCheck — emits attribution + overgeneralization findings from a 3-axis judge."""
 import unittest
-from faithful_core import CongruenceCheck, abstaining_congruence_judge, surface_policy
+from fides import CongruenceCheck, abstaining_congruence_judge, surface_policy
 
 
 def judge(on_subject, kind_ok, conf=0.9):

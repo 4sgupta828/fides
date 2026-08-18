@@ -1,7 +1,7 @@
 """P/R matrix: deterministic numeric never escapes; an llm-judge miss surfaces as an escape."""
 import unittest
-from faithful_core.finding import Finding, ContentSpan
-from faithful_core.harness import run_gate_eval, wilson
+from fides.finding import Finding, ContentSpan
+from fides.harness import run_gate_eval, wilson
 
 
 def finding(dim, kind, groundedness):

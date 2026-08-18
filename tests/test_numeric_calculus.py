@@ -1,6 +1,6 @@
 """Adversarial calculus tests — the cases the n-gram gate gets wrong (mirrors the TS suite)."""
 import unittest
-from faithful_core.numeric import ledger
+from fides.numeric import ledger
 
 
 def fact(fid, value, subject, metric, **kw):

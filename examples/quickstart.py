@@ -1,7 +1,7 @@
 """Quickstart — verify a mini research answer against its evidence with ONE Gate call.
 Run: python3 examples/quickstart.py   (no API key needed; uses a deterministic demo judge.)"""
-from faithful_core import Gate, NumericCheck, EntailmentCheck, format_gate_report
-from faithful_core.numeric import ledger
+from fides import Gate, NumericCheck, EntailmentCheck, format_gate_report
+from fides.numeric import ledger
 
 # 1. Evidence extracted from the source corpus (Layer 1) — typed Fact cells.
 facts = {f["id"]: f for f in [
@@ -13,7 +13,7 @@ facts = {f["id"]: f for f in [
                              "period": "FY2024", "locatorText": "AUM reached $1.2B by year-end 2024."}),
 ]}
 
-# 2. A deterministic demo "judge" (swap for faithful_core.adapters.openai_judge.make_openai_entailment_judge()).
+# 2. A deterministic demo "judge" (swap for fides.adapters.openai_judge.make_openai_entailment_judge()).
 def demo_judge(text, evidence):
     if "best" in text.lower() or "guarantee" in text.lower():
         return {"verdict": "violated", "confidence": 0.9, "reason": "unsupported superlative/claim"}

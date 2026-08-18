@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://faithful-core/contract/numeric_claim.schema.json",
+  "$id": "https://fides/contract/numeric_claim.schema.json",
   "title": "NumericClaim",
   "description": "An emitted number to verify: the string as rendered + its context + its proposed binding to a source Fact cell (directly or via a code-recomputed derivation). Consumers adapt their own claim objects into this shape.",
   "type": "object",

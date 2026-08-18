@@ -1,6 +1,6 @@
 """Policy table + the immovable fabrication invariant + composition."""
 import unittest
-from faithful_core.finding import (
+from fides.finding import (
     Finding, ContentSpan, surface_policy, compose_decision, is_published, default_policy,
 )
 

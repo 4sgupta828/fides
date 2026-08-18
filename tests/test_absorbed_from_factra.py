@@ -1,11 +1,11 @@
 """Tests for the battle-tested behaviors absorbed from factra: the fuzzy span gate, the prose
 value-leak audit, and the Gate's fail-closed coverage guard."""
 import unittest
-from faithful_core import (
+from fides import (
     QuoteCheck, verify_span, verify_span_any, value_present_in_prose, leaked_values,
     Gate, NumericCheck, surface_policy, GateManifest,
 )
-from faithful_core.numeric import ledger
+from fides.numeric import ledger
 
 
 class SpanGate(unittest.TestCase):

@@ -1,7 +1,7 @@
 """The falsifiable platform test: the Python numeric ledger must reproduce the CANONICAL TS verdicts
 byte-for-byte. If these golden vectors don't match, the 'portable core' premise is dead."""
 import json, os, unittest
-from faithful_core.numeric import ledger
+from fides.numeric import ledger
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GOLD = os.path.join(ROOT, "goldens", "numeric_golden.json")

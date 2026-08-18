@@ -1,7 +1,7 @@
 """Judge-eval harness — tested with deterministic fake judges (no LLM). Proves it surfaces a good
 judge as 100% and a degenerate judge (always-abstain) as low recall."""
 import json, os, unittest
-from faithful_core.semantic_eval import run_entailment_eval, format_entailment_eval
+from fides.semantic_eval import run_entailment_eval, format_entailment_eval
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GOLD = os.path.join(ROOT, "goldens", "semantic_gold.json")
