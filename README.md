@@ -28,6 +28,16 @@ Zero runtime dependencies, Python ≥ 3.9 — drops into any consumer.
 - **Fail-closed coverage** — a span with content but nothing that can verify it now abstains
   (compliance holds it) instead of silently publishing (was fail-open).
 
+## Anti-slop (a SEPARATE quality track)
+Slop is a *usefulness* axis, never a truth axis — a sloppy sentence isn't a lie, and the
+faithfulness verifier never reaches into style. So `slop.py` measures it separately:
+deterministic signals (AI-cliché/filler phrases, empty no-concrete-content sentences,
+hedge-rate, low grounded-info density) → `slop_score` / `assess_slop`, an advisory field on
+the `GateReport`, plus an optional injected LLM slop judge. It feeds the generation
+**de-slop** pass (rewrite filler concrete) — which is SUBORDINATE to faithfulness: a
+de-slopped rewrite must still pass the fabrication gate, or it's rejected. Slop never drops
+content as a fabrication.
+
 ## The one immovable rule
 A **deterministic `false`** — a *proven* fabrication — is **always dropped**; no policy dial can
 override it. The dial ranges over *grounding strictness* (what happens to true-but-uncited general

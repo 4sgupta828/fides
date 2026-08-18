@@ -20,6 +20,7 @@ from .text import QuoteCheck, verify_span, verify_span_any, normalize_for_span
 from .semantic.robust import JudgeCache, make_cached_judge, with_retry, make_chunked_batch_judge
 from .evidence import OriginScopedEvidence
 from .authority import all_proposal_grade
+from .slop import assess_slop, slop_score, slop_signals, flag_slop_sentences, SLOP_PHRASES
 from .numeric.audit import build_audit_report, render_audit_markdown
 from .harness import run_gate_eval, format_gate_eval, wilson, gold_should_publish
 from .gate import Gate, GateReport, SpanDecision, format_gate_report
@@ -38,6 +39,7 @@ __all__ = [
     "QuoteCheck", "verify_span", "verify_span_any", "normalize_for_span",
     "JudgeCache", "make_cached_judge", "with_retry", "make_chunked_batch_judge",
     "OriginScopedEvidence", "all_proposal_grade",
+    "assess_slop", "slop_score", "slop_signals", "flag_slop_sentences", "SLOP_PHRASES",
     "build_audit_report", "render_audit_markdown",
     "run_gate_eval", "format_gate_eval", "wilson", "gold_should_publish",
     "Gate", "GateReport", "SpanDecision", "format_gate_report",

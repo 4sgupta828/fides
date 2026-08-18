@@ -44,6 +44,7 @@ class GateManifest:
     require_period_surfaces: FrozenSet[str] = frozenset()                 # unresolved PERIOD → fail (opt-in)
     verbatim_surfaces: FrozenSet[str] = frozenset()                      # number must match source VERBATIM (table cells)
     proposal_source_classes: FrozenSet[str] = frozenset()               # authority floor: which source classes are proposal-grade
+    slop_threshold: float = 0.5                                          # advisory quality bar (SEPARATE from faithfulness)
     enabled_dimensions: FrozenSet[str] = frozenset(
         {"numeric", "quote", "entailment", "attribution", "overgeneralization", "misinterpretation"}
     )

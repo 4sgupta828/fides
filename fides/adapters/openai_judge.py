@@ -25,7 +25,15 @@ _CONGRUENCE_SYSTEM = (
     '{"on_subject":"...","kind_ok":"...","confidence":0.0-1.0,"reason":"short"}'
 )
 
+_SLOP_SYSTEM = (
+    "You are a ruthless editor detecting AI 'slop' — low-value, generic, filler prose. Judge only "
+    "USEFULNESS/specificity, never truth. 'slop' = vague, cliché, hedge-heavy, or padding with no "
+    "concrete information; 'ok' = specific and information-dense; 'abstain' = unsure. Respond as "
+    'JSON: {"verdict":"slop|ok|abstain","confidence":0.0-1.0,"reason":"short — what to cut/make concrete"}'
+)
+
 _VERDICTS = ("supported", "violated", "abstain")
+_SLOP_VERDICTS = ("slop", "ok", "abstain")
 
 
 def _default_client():
@@ -59,6 +67,19 @@ def make_openai_entailment_judge(model: str = "gpt-4o-mini", client=None, timeou
                     "confidence": float(data.get("confidence", 0.5)),
                     "reason": str(data.get("reason", ""))}
         except Exception as e:  # fail-safe: abstain, never a guess
+            return {"verdict": "abstain", "confidence": 0.0, "reason": "judge_error:%s" % type(e).__name__}
+    return judge
+
+
+def make_openai_slop_judge(model: str = "gpt-4o-mini", client=None, timeout: float = 30.0):
+    """Optional LLM slop judge for novel filler a lexicon misses → {verdict: slop|ok|abstain}."""
+    def judge(text: str, _evidence=None) -> dict:
+        try:
+            data = _chat_json(client or _default_client(), model, _SLOP_SYSTEM, "TEXT:\n%s" % text, timeout)
+            v = data.get("verdict")
+            return {"verdict": v if v in _SLOP_VERDICTS else "abstain",
+                    "confidence": float(data.get("confidence", 0.5)), "reason": str(data.get("reason", ""))}
+        except Exception as e:
             return {"verdict": "abstain", "confidence": 0.0, "reason": "judge_error:%s" % type(e).__name__}
     return judge
 

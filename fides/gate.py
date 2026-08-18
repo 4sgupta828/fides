@@ -10,6 +10,7 @@ from typing import List, Optional
 from .finding import Finding, ContentSpan, compose_decision, is_published, Action
 from .manifest import GateManifest, DEFAULT_MANIFEST
 from .quality import quality_signals, leaked_values
+from .slop import assess_slop
 
 
 @dataclass
@@ -28,6 +29,7 @@ class GateReport:
     decisions: List[SpanDecision]
     summary: dict
     quality: dict = field(default_factory=dict)
+    slop: dict = field(default_factory=dict)  # advisory quality assessment, SEPARATE from the faithfulness verdict
 
 
 class Gate:
@@ -92,6 +94,7 @@ class Gate:
                      "withheld": len(decisions) - published, "by_action": by_action,
                      "leaked_values": leaks},
             quality=quality_signals(pub_text) if pub_text else {},
+            slop=assess_slop(pub_text, self.manifest.slop_threshold) if pub_text else {},
         )
 
 

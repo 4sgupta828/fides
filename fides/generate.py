@@ -40,12 +40,36 @@ Drafter = Callable[[dict], dict]
 Repairer = Callable[[dict, dict, SpanDecision], dict]
 
 
+# a slop_repairer takes (intent, accepted_span, slop_report) and returns a de-slopped span.
+SlopRepairer = Callable[[dict, dict, dict], dict]
+
+
 class GroundedGenerator:
-    def __init__(self, gate: Gate, drafter: Drafter, repairer: Optional[Repairer] = None, max_repairs: int = 2):
+    def __init__(self, gate: Gate, drafter: Drafter, repairer: Optional[Repairer] = None, max_repairs: int = 2,
+                 slop_repairer: Optional[SlopRepairer] = None, slop_threshold: float = 0.5):
         self.gate = gate
         self.drafter = drafter
         self.repairer = repairer
         self.max_repairs = max_repairs
+        self.slop_repairer = slop_repairer
+        self.slop_threshold = slop_threshold
+
+    def _deslop(self, intent: dict, span: dict) -> dict:
+        """After faithfulness passes, try ONE de-slop rewrite — but SUBORDINATE to faithfulness: the
+        rewrite is accepted only if it still passes the fabrication gate AND is less sloppy. Slop
+        never overrides truth; a rewrite that reintroduces an unverifiable claim is rejected."""
+        from .slop import assess_slop
+        if self.slop_repairer is None or not span.get("text"):
+            return span
+        report = assess_slop(span["text"], self.slop_threshold)
+        if not report["is_slop"]:
+            return span
+        candidate = self.slop_repairer(intent, span, report)
+        if not self.gate.run([candidate]).decisions[0].published:
+            return span  # de-slop must not break faithfulness → keep the original
+        if assess_slop(candidate.get("text", ""), self.slop_threshold)["score"] >= report["score"]:
+            return span  # rewrite wasn't actually less sloppy → keep the original
+        return candidate
 
     def generate(self, plan: List[dict]) -> GenResult:
         accepted: List[dict] = []
@@ -57,6 +81,7 @@ class GroundedGenerator:
             while True:
                 decision = self.gate.run([span]).decisions[0]
                 if decision.published:
+                    span = self._deslop(intent, span)  # quality pass, subordinate to faithfulness
                     accepted.append(span)
                     trace.append(GenStep(intent.get("id", "?"), "accepted", attempts, decision.action))
                     break
