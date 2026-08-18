@@ -18,6 +18,7 @@ from .semantic.congruence import CongruenceCheck, CongruenceJudge, abstaining_co
 from .quality import quality_signals, goodhart_tripwire, HEDGE_LEXICON
 from .numeric.audit import build_audit_report, render_audit_markdown
 from .harness import run_gate_eval, format_gate_eval, wilson, gold_should_publish
+from .gate import Gate, GateReport, SpanDecision, format_gate_report
 
 __version__ = "0.1.0"
 
@@ -29,5 +30,6 @@ __all__ = [
     "CongruenceCheck", "CongruenceJudge", "abstaining_congruence_judge",
     "quality_signals", "goodhart_tripwire", "HEDGE_LEXICON",
     "build_audit_report", "render_audit_markdown",
-    "run_gate_eval", "format_gate_eval", "wilson", "gold_should_publish", "__version__",
+    "run_gate_eval", "format_gate_eval", "wilson", "gold_should_publish",
+    "Gate", "GateReport", "SpanDecision", "format_gate_report", "__version__",
 ]

@@ -28,9 +28,12 @@ knowledge), never over fabrication. Style is not a faithfulness axis and never e
 1. ✅ Contract (`Finding`) + numeric Check + golden-vector conformance (34 cases, TS↔Py parity).
 2. ✅ First semantic Check stub — `EntailmentCheck` with an injectable judge (supported|violated|
    abstain), fail-safe, llm_judge policy (never auto-drops). Real OpenAI judge wired later.
-3. Land the numeric Check in one Python consumer behind a flag, displacing its n-gram number check;
+3. ✅ CongruenceCheck (attribution + over-generalization) + anti-slop quality tripwires + a unified
+   `Gate` orchestrator (one call → one publish verdict across all checks + audit + quality).
+4. Wire the real OpenAI judges (entailment/congruence) over the LLM boundary (Python-canonical).
+5. Land the numeric Check in one Python consumer behind a flag, displacing its n-gram number check;
    confirm held-out eval ≥ current.
-4. Flesh out congruence/slop Checks (Python-canonical, adopting Noesis/Eigen judge designs).
+6. Generation *on top*: `plan → retrieve → draft → verify → repair` (the verifier as critic).
 4. The marketing policy-table dial.
 5. Generation *on top*: `plan → retrieve → draft → verify → repair` (the verifier as critic).
 
