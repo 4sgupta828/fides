@@ -808,6 +808,383 @@
         "emittedCanonical": null,
         "sourceCanonical": null
       }
+    },
+    {
+      "id": "ratio-identity",
+      "category": "unit_type",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "3x",
+            "subject": "Fund A",
+            "metric": "MOIC"
+          }
+        ],
+        "claim": {
+          "emitted": "3x",
+          "binding": {
+            "kind": "source",
+            "factId": "f1"
+          },
+          "context": {
+            "subject": "Fund A",
+            "metric": "MOIC"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": true,
+        "code": "ok",
+        "emittedCanonical": 3,
+        "sourceCanonical": 3
+      }
+    },
+    {
+      "id": "duration-ok",
+      "category": "unit_type",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "18 months",
+            "subject": "Project Atlas",
+            "metric": "timeline"
+          }
+        ],
+        "claim": {
+          "emitted": "18 months",
+          "binding": {
+            "kind": "source",
+            "factId": "f1"
+          },
+          "context": {
+            "subject": "Project Atlas",
+            "metric": "timeline"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": true,
+        "code": "ok",
+        "emittedCanonical": 18,
+        "sourceCanonical": 18
+      }
+    },
+    {
+      "id": "count-ok",
+      "category": "unit_type",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "7,000",
+            "subject": "ARR",
+            "metric": "customers"
+          }
+        ],
+        "claim": {
+          "emitted": "7,000",
+          "binding": {
+            "kind": "source",
+            "factId": "f1"
+          },
+          "context": {
+            "subject": "ARR",
+            "metric": "customers"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": true,
+        "code": "ok",
+        "emittedCanonical": 7000,
+        "sourceCanonical": 7000
+      }
+    },
+    {
+      "id": "magnitude-equivalence",
+      "category": "unit_type",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "$1.2B",
+            "subject": "ACME",
+            "metric": "revenue"
+          }
+        ],
+        "claim": {
+          "emitted": "$1,200M",
+          "binding": {
+            "kind": "source",
+            "factId": "f1"
+          },
+          "context": {
+            "subject": "ACME",
+            "metric": "revenue"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": true,
+        "code": "ok",
+        "emittedCanonical": 1200000000,
+        "sourceCanonical": 1200000000
+      }
+    },
+    {
+      "id": "sum-ok",
+      "category": "derivation",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "$2M",
+            "subject": "ACME",
+            "metric": "segment A revenue"
+          },
+          {
+            "id": "f2",
+            "value": "$3M",
+            "subject": "ACME",
+            "metric": "segment B revenue"
+          }
+        ],
+        "claim": {
+          "emitted": "$5M",
+          "binding": {
+            "kind": "derived",
+            "derivation": {
+              "op": "sum",
+              "operandFactIds": [
+                "f1",
+                "f2"
+              ]
+            }
+          },
+          "context": {
+            "subject": "ACME"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": true,
+        "code": "ok",
+        "emittedCanonical": 5000000,
+        "sourceCanonical": 5000000
+      }
+    },
+    {
+      "id": "share-of-ok",
+      "category": "derivation",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "300",
+            "subject": "ACME",
+            "metric": "paying customers"
+          },
+          {
+            "id": "f2",
+            "value": "1200",
+            "subject": "ACME",
+            "metric": "total customers"
+          }
+        ],
+        "claim": {
+          "emitted": "25%",
+          "binding": {
+            "kind": "derived",
+            "derivation": {
+              "op": "share_of",
+              "operandFactIds": [
+                "f1",
+                "f2"
+              ]
+            }
+          },
+          "context": {
+            "subject": "ACME"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": true,
+        "code": "ok",
+        "emittedCanonical": 25,
+        "sourceCanonical": 25
+      }
+    },
+    {
+      "id": "delta-ok",
+      "category": "derivation",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "5,000",
+            "subject": "ARR",
+            "metric": "customers"
+          },
+          {
+            "id": "f2",
+            "value": "7,000",
+            "subject": "ARR",
+            "metric": "customers"
+          }
+        ],
+        "claim": {
+          "emitted": "2,000",
+          "binding": {
+            "kind": "derived",
+            "derivation": {
+              "op": "delta",
+              "operandFactIds": [
+                "f1",
+                "f2"
+              ]
+            }
+          },
+          "context": {
+            "subject": "ARR"
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": true,
+        "code": "ok",
+        "emittedCanonical": 2000,
+        "sourceCanonical": 2000
+      }
+    },
+    {
+      "id": "difference-cross-subject",
+      "category": "derivation",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "12.4%",
+            "subject": "Fund A",
+            "metric": "return"
+          },
+          {
+            "id": "f2",
+            "value": "9.8%",
+            "subject": "benchmark",
+            "metric": "return"
+          }
+        ],
+        "claim": {
+          "emitted": "2.6%",
+          "binding": {
+            "kind": "derived",
+            "derivation": {
+              "op": "difference",
+              "operandFactIds": [
+                "f1",
+                "f2"
+              ]
+            }
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": false,
+        "code": "operands_incoherent",
+        "emittedCanonical": null,
+        "sourceCanonical": null
+      }
+    },
+    {
+      "id": "growth-zero-base",
+      "category": "derivation",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "0",
+            "subject": "ARR",
+            "metric": "customers"
+          },
+          {
+            "id": "f2",
+            "value": "7,000",
+            "subject": "ARR",
+            "metric": "customers"
+          }
+        ],
+        "claim": {
+          "emitted": "40%",
+          "binding": {
+            "kind": "derived",
+            "derivation": {
+              "op": "growth_pct",
+              "operandFactIds": [
+                "f1",
+                "f2"
+              ]
+            }
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": false,
+        "code": "derivation_unverifiable",
+        "emittedCanonical": null,
+        "sourceCanonical": null
+      }
+    },
+    {
+      "id": "mixed-unit-sum",
+      "category": "derivation",
+      "input": {
+        "facts": [
+          {
+            "id": "f1",
+            "value": "$5M",
+            "subject": "ACME",
+            "metric": "revenue"
+          },
+          {
+            "id": "f2",
+            "value": "10%",
+            "subject": "ACME",
+            "metric": "margin"
+          }
+        ],
+        "claim": {
+          "emitted": "$5M",
+          "binding": {
+            "kind": "derived",
+            "derivation": {
+              "op": "sum",
+              "operandFactIds": [
+                "f1",
+                "f2"
+              ]
+            }
+          }
+        },
+        "opts": {}
+      },
+      "expected": {
+        "ok": false,
+        "code": "unit_mismatch",
+        "emittedCanonical": null,
+        "sourceCanonical": null
+      }
     }
   ]
 }

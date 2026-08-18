@@ -7,7 +7,7 @@
   "required": ["check_id", "dimension", "kind", "span", "groundedness"],
   "properties": {
     "check_id": { "type": "string" },
-    "dimension": { "enum": ["numeric", "quote", "attribution", "overgeneralization", "misinterpretation", "slop"] },
+    "dimension": { "enum": ["numeric", "quote", "entailment", "attribution", "overgeneralization", "misinterpretation", "slop"] },
     "kind": { "enum": ["deterministic", "llm_judge"] },
     "span": {
       "type": "object",

@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 
 # --- the typed vocabulary of a verdict --------------------------------------------------------
-Dimension = str      # 'numeric' | 'quote' | 'attribution' | 'overgeneralization' | 'misinterpretation' | 'slop'
+Dimension = str      # 'numeric' | 'quote' | 'entailment' | 'attribution' | 'overgeneralization' | 'misinterpretation' | 'slop'
 CheckKind = str      # 'deterministic' | 'llm_judge'
 Groundedness = str   # 'in_corpus' | 'true_uncited' | 'false' | 'abstain'
 SurfaceTier = str    # 'compliance' | 'marketing'  (extensible)

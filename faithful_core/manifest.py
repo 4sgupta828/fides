@@ -43,7 +43,7 @@ class GateManifest:
     strict_surfaces: FrozenSet[str] = frozenset({"compliance"})          # unresolved ENTITY → fail
     require_period_surfaces: FrozenSet[str] = frozenset()                 # unresolved PERIOD → fail (opt-in)
     enabled_dimensions: FrozenSet[str] = frozenset(
-        {"numeric", "quote", "attribution", "overgeneralization", "misinterpretation"}
+        {"numeric", "quote", "entailment", "attribution", "overgeneralization", "misinterpretation"}
     )
     # future slots (named, not built): judge_directives, source_eligibility, period_grammar, eval_gold
 

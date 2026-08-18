@@ -25,10 +25,12 @@ override it. The dial ranges over *grounding strictness* (what happens to true-b
 knowledge), never over fabrication. Style is not a faithfulness axis and never enters the verifier.
 
 ## Roadmap
-1. ✅ Contract (`Finding`) + numeric Check + golden-vector conformance (TS↔Py parity).
-2. Land the numeric Check in one Python consumer behind a flag, displacing its n-gram number check;
+1. ✅ Contract (`Finding`) + numeric Check + golden-vector conformance (34 cases, TS↔Py parity).
+2. ✅ First semantic Check stub — `EntailmentCheck` with an injectable judge (supported|violated|
+   abstain), fail-safe, llm_judge policy (never auto-drops). Real OpenAI judge wired later.
+3. Land the numeric Check in one Python consumer behind a flag, displacing its n-gram number check;
    confirm held-out eval ≥ current.
-3. Adopt the semantic judges (entailment/congruence) as Python-canonical Checks.
+4. Flesh out congruence/slop Checks (Python-canonical, adopting Noesis/Eigen judge designs).
 4. The marketing policy-table dial.
 5. Generation *on top*: `plan → retrieve → draft → verify → repair` (the verifier as critic).
 
