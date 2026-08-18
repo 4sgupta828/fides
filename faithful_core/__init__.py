@@ -14,6 +14,8 @@ from .manifest import (
 from .check import Check
 from .numeric.check import NumericCheck
 from .semantic.entailment import EntailmentCheck, EntailmentJudge, abstaining_judge
+from .semantic.congruence import CongruenceCheck, CongruenceJudge, abstaining_congruence_judge
+from .quality import quality_signals, goodhart_tripwire, HEDGE_LEXICON
 from .numeric.audit import build_audit_report, render_audit_markdown
 from .harness import run_gate_eval, format_gate_eval, wilson, gold_should_publish
 
@@ -24,6 +26,8 @@ __all__ = [
     "PolicyTable", "DEFAULT_POLICY", "default_policy", "surface_policy", "compose_decision", "is_published",
     "UnitVocab", "GateManifest", "DEFAULT_VOCAB", "DEFAULT_MANIFEST", "INDIA_TECH_VOCAB",
     "Check", "NumericCheck", "EntailmentCheck", "EntailmentJudge", "abstaining_judge",
+    "CongruenceCheck", "CongruenceJudge", "abstaining_congruence_judge",
+    "quality_signals", "goodhart_tripwire", "HEDGE_LEXICON",
     "build_audit_report", "render_audit_markdown",
     "run_gate_eval", "format_gate_eval", "wilson", "gold_should_publish", "__version__",
 ]
