@@ -4,6 +4,14 @@ A domain-agnostic **faithfulness engine**: verify that AI-generated content is *
 — catch fabricated numbers, misattributed quotes, over-generalizations, misinterpretations — before
 it's published, and keep only what's genuine.
 
+**Try it in the browser** (zero deps — stdlib `http.server`):
+
+    python3 examples/serve.py     # open http://localhost:8000
+
+Enter your source data; fides brainstorms grounded posts / infographics / videos, renders the
+real SVG + HTML inline, shows the grounding score + source-documentation audit, and (toggle on)
+drops a fabricated stat before your eyes — genuine kept, fabricated removed.
+
 It is a **light platform**, not a heavy shared runtime (panel decision):
 
 - a shared **verdict currency** — `Finding` (span + dimension + deterministic-vs-judge +
