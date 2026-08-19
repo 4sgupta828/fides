@@ -19,6 +19,14 @@ It is a **light platform**, not a heavy shared runtime (panel decision):
 
 Zero runtime dependencies, Python ≥ 3.9 — drops into any consumer.
 
+## Multi-lens judging (perspective-diverse verification)
+`make_multi_lens_judge(judge, lenses, survival='unanimous')` re-judges a span under N lens
+framings and combines them — the fides-shaped half of noesis's lens technique. A 'violated'
+from any lens always wins (escape-safe). Default **unanimous** = adversarial confirmation
+(supported only if every lens agrees) → it *lowers* fabrication-escape; `any` is a recall move
+but escape-unsafe (opt-in, prove with the harness first). It returns a verdict — it never
+drops; the policy table still owns that. The P/R harness A/B gates it: escape must stay 0.
+
 ## Absorbed from factra (battle-tested)
 - **QuoteCheck** — a deterministic, LLM-free no-fabrication span gate (3-tier: exact →
   windowed difflib ≥0.95 → longest-contiguous rebind ≥70%, with typography+whitespace

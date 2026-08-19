@@ -17,7 +17,7 @@ from .semantic.entailment import EntailmentCheck, EntailmentJudge, abstaining_ju
 from .semantic.congruence import CongruenceCheck, CongruenceJudge, abstaining_congruence_judge
 from .quality import quality_signals, goodhart_tripwire, HEDGE_LEXICON, leaked_values, value_present_in_prose
 from .text import QuoteCheck, verify_span, verify_span_any, normalize_for_span
-from .semantic.robust import JudgeCache, make_cached_judge, with_retry, make_chunked_batch_judge
+from .semantic.robust import JudgeCache, make_cached_judge, with_retry, make_chunked_batch_judge, make_multi_lens_judge
 from .evidence import OriginScopedEvidence
 from .authority import all_proposal_grade
 from .slop import assess_slop, slop_score, slop_signals, flag_slop_sentences, SLOP_PHRASES
@@ -37,7 +37,7 @@ __all__ = [
     "CongruenceCheck", "CongruenceJudge", "abstaining_congruence_judge",
     "quality_signals", "goodhart_tripwire", "HEDGE_LEXICON", "leaked_values", "value_present_in_prose",
     "QuoteCheck", "verify_span", "verify_span_any", "normalize_for_span",
-    "JudgeCache", "make_cached_judge", "with_retry", "make_chunked_batch_judge",
+    "JudgeCache", "make_cached_judge", "with_retry", "make_chunked_batch_judge", "make_multi_lens_judge",
     "OriginScopedEvidence", "all_proposal_grade",
     "assess_slop", "slop_score", "slop_signals", "flag_slop_sentences", "SLOP_PHRASES",
     "build_audit_report", "render_audit_markdown",

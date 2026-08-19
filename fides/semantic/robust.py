@@ -89,3 +89,49 @@ def make_chunked_batch_judge(batch_judge: Callable[[List[Tuple[str, List[str]]]]
                              "reason": "chunk_error:%s" % type(e).__name__}] * len(chunk))
         return out
     return run_many
+
+
+def make_multi_lens_judge(judge, lenses, survival: str = "unanimous"):
+    """Re-judge a span under N LENS FRAMINGS and combine — perspective-diverse verification (the
+    fides-shaped half of noesis's lens technique). Returns an EntailmentJudge-shaped verdict; it
+    NEVER drops (the policy table owns that). A 'violated' from ANY lens always wins (escape-safe).
+
+    survival, applied only when no lens said 'violated':
+      'unanimous' (DEFAULT): 'supported' iff EVERY lens supports — adversarial CONFIRMATION, lowers
+                  fabrication-escape (a single framing's rubber-stamp can't carry it alone). Ships by
+                  default because escape ≈ 0 is fides's non-negotiable invariant.
+      'majority' : 'supported' iff a strict majority support.
+      'any'      : 'supported' iff ANY lens supports — a RECALL move, but ESCAPE-UNSAFE (a fabrication
+                  every-lens-but-one merely abstains on slips through). Opt-in; prove it with the P/R
+                  harness (escape must stay 0) before relying on it.
+
+    A 'lens' is a framing string prepended to the claim (the injected judge sees the same
+    (claim, evidence)). Per-lens verdicts ride in `reason` (Rule 13). If the base judge is wrapped
+    with make_cached_judge, each (claim, evidence, lens) memoizes independently — cost is N× first
+    time only. Fail-safe: a lens whose judge errors/abstains is just an 'abstain' vote."""
+    lenses = list(lenses)
+    if not lenses:
+        raise ValueError("make_multi_lens_judge needs at least one lens")
+    if survival not in ("unanimous", "majority", "any"):
+        raise ValueError("survival must be unanimous|majority|any")
+
+    def wrapped(claim_text: str, evidence_texts) -> dict:
+        votes = []
+        for lens in lenses:
+            framed = "[Judge under this lens: %s]\n%s" % (lens, claim_text)
+            try:
+                votes.append(judge(framed, evidence_texts).get("verdict", "abstain"))
+            except Exception as e:  # noqa: BLE001 — a lens failure is one abstain vote, never a raise
+                votes.append("abstain")
+        reason = "; ".join("L%d=%s" % (i + 1, v) for i, v in enumerate(votes))
+        if "violated" in votes:
+            final = "violated"
+        elif survival == "any":
+            final = "supported" if "supported" in votes else "abstain"
+        elif survival == "majority":
+            final = "supported" if sum(v == "supported" for v in votes) * 2 > len(votes) else "abstain"
+        else:  # unanimous
+            final = "supported" if all(v == "supported" for v in votes) else "abstain"
+        return {"verdict": final, "confidence": 1.0 if final != "abstain" else 0.0,
+                "reason": reason, "lens_verdicts": votes}
+    return wrapped
