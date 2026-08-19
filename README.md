@@ -19,6 +19,17 @@ It is a **light platform**, not a heavy shared runtime (panel decision):
 
 Zero runtime dependencies, Python ≥ 3.9 — drops into any consumer.
 
+## Grounded content studio (fides.studio)
+A generation LAYER on top of the verifier (panel: generation is a layer, never the core).
+`ContentStudio.run(data, title, formats=('post','image','video'))` brainstorms candidate
+assets from a customer's typed data and GROUNDS each — every number is a NumericClaim gated
+by the ledger, so deterministic infographics/videos are grounded BY CONSTRUCTION (they can't
+show a figure not in the data) and an LLM-drafted post has its fabricated numbers dropped
+before it ships. Each asset carries a grounding score + the source-documentation audit. The
+ideator/post-composer are injected (LLM in prod); the heavy renderers (spec->PNG via canvas,
+storyboard->mp4 via ffmpeg) are consumer adapters — studio emits the VERIFIED SPEC, keeping
+the core zero-dep. See examples/studio.py.
+
 ## Multi-lens judging (perspective-diverse verification)
 `make_multi_lens_judge(judge, lenses, survival='unanimous')` re-judges a span under N lens
 framings and combines them — the fides-shaped half of noesis's lens technique. A 'violated'

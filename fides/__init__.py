@@ -24,6 +24,7 @@ from .slop import assess_slop, slop_score, slop_signals, flag_slop_sentences, SL
 from .numeric.audit import build_audit_report, render_audit_markdown
 from .harness import run_gate_eval, format_gate_eval, wilson, gold_should_publish
 from .gate import Gate, GateReport, SpanDecision, format_gate_report
+from .studio import ContentStudio, GroundedAsset, Idea, infographic_draft, video_draft, post_draft_deterministic, select_headline_facts
 from .generate import GroundedGenerator, GenResult, GenStep
 from .semantic_eval import run_entailment_eval, format_entailment_eval
 
@@ -43,6 +44,7 @@ __all__ = [
     "build_audit_report", "render_audit_markdown",
     "run_gate_eval", "format_gate_eval", "wilson", "gold_should_publish",
     "Gate", "GateReport", "SpanDecision", "format_gate_report",
+    "ContentStudio", "GroundedAsset", "Idea", "infographic_draft", "video_draft", "post_draft_deterministic", "select_headline_facts",
     "GroundedGenerator", "GenResult", "GenStep",
     "run_entailment_eval", "format_entailment_eval", "__version__",
 ]
