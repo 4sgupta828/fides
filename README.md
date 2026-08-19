@@ -26,9 +26,12 @@ assets from a customer's typed data and GROUNDS each — every number is a Numer
 by the ledger, so deterministic infographics/videos are grounded BY CONSTRUCTION (they can't
 show a figure not in the data) and an LLM-drafted post has its fabricated numbers dropped
 before it ships. Each asset carries a grounding score + the source-documentation audit. The
-ideator/post-composer are injected (LLM in prod); the heavy renderers (spec->PNG via canvas,
-storyboard->mp4 via ffmpeg) are consumer adapters — studio emits the VERIFIED SPEC, keeping
-the core zero-dep. See examples/studio.py.
+ideator/post-composer are injected (LLM in prod). `fides.render` then turns a verified spec
+into real, openable pixels with ZERO deps — `render_asset(asset)` emits an SVG poster for an
+infographic and a self-contained HTML player (CSS-timed frames, no ffmpeg) for a storyboard.
+The renderer draws ONLY the verified spec, so grounding survives all the way to the canvas —
+and it refuses an un-shippable asset outright. Heavier targets (PNG/mp4 rasterization) stay
+consumer adapters. See examples/studio.py (writes examples/out/infographic.svg + storyboard.html).
 
 ## Multi-lens judging (perspective-diverse verification)
 `make_multi_lens_judge(judge, lenses, survival='unanimous')` re-judges a span under N lens

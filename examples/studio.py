@@ -1,7 +1,8 @@
 """fides.studio — brainstorm grounded posts / infographics / videos from a customer's data. Every
 number is verified against the source by the fides ledger, so assets are grounded by construction
 (no slop, no fabricated stats). Run: python3 examples/studio.py  (no key needed.)"""
-from fides import ContentStudio, Gate, NumericCheck, render_audit_markdown
+import os
+from fides import ContentStudio, Gate, NumericCheck, render_audit_markdown, render_asset
 from fides.numeric import ledger
 
 # Customer data → typed Fact cells (what an extractor would produce from a fund factsheet).
@@ -26,6 +27,19 @@ for a in assets:
     else:
         print("   post: " + a.spec["text"])
     print()
+
+# Render the grounded specs to REAL, openable files (zero deps: SVG is text, video is a self-contained
+# HTML player). The renderer draws only the verified spec, so grounding survives to pixels.
+out = os.path.join(os.path.dirname(__file__), "out")
+os.makedirs(out, exist_ok=True)
+for a in assets:
+    if a.format == "image":
+        open(os.path.join(out, "infographic.svg"), "w").write(render_asset(a))
+    elif a.format == "video":
+        open(os.path.join(out, "storyboard.html"), "w").write(render_asset(a))
+print("--- rendered grounded pixels ---")
+print("   %s/infographic.svg   (open in any browser)" % out)
+print("   %s/storyboard.html    (plays the verified stats as timed frames)\n" % out)
 
 # The audit that ships with the infographic — its "source documentation for figures".
 img = next(a for a in assets if a.format == "image")
