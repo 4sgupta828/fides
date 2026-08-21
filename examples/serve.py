@@ -21,6 +21,28 @@ from fides.numeric import ledger
 
 studio = ContentStudio(Gate(checks=[NumericCheck()]))
 
+# one-click preset datasets (the 6 domains from examples/proof.py) — [value, subject, metric, period]
+PRESETS = [
+    {"title": "Apex Growth Fund — FY2024", "rows": [
+        ["12.4%", "Apex Growth", "net return", "FY2024"], ["$1.2B", "Apex Growth", "AUM", "FY2024"],
+        ["65 bps", "Apex Growth", "expense ratio", ""], ["9.8%", "benchmark", "return", "FY2024"]]},
+    {"title": "Phase III trial — Drug DX-12", "rows": [
+        ["34%", "DX-12", "absolute risk reduction", "52 weeks"], ["100 mg", "DX-12", "daily dose", ""],
+        ["4,182", "DX-12 trial", "enrollment", ""]]},
+    {"title": "Grid decarbonization — 2024", "rows": [
+        ["18.6 GW", "state grid", "solar capacity", "2024"], ["27%", "state grid", "emissions cut vs 2019", "2024"],
+        ["$41/MWh", "state grid", "avg clearing price", "2024"]]},
+    {"title": "NorthStar SaaS — Q4", "rows": [
+        ["$48M", "NorthStar", "ARR", "Q4-2024"], ["121%", "NorthStar", "net dollar retention", "Q4-2024"],
+        ["1.8%", "NorthStar", "gross monthly churn", "Q4-2024"]]},
+    {"title": "Striker FC — 2024 season", "rows": [
+        ["89", "Striker FC", "goals scored", "2024"], ["78", "Striker FC", "points", "2024"],
+        ["1.94", "Striker FC", "xG per match", "2024"]]},
+    {"title": "Metro ballot measure — 2024", "rows": [
+        ["58.3%", "Measure 7", "yes vote share", "2024"], ["62%", "Metro county", "turnout", "2024"],
+        ["94,204", "Measure 7", "vote margin", "2024"]]},
+]
+
 
 def _fab_composer(idea, facts):
     """An 'LLM' post composer that fabricates a peer stat NOT present in the data — the gate drops it."""
@@ -89,12 +111,16 @@ details{margin-top:10px}summary{cursor:pointer;color:var(--muted);font-size:13px
 pre{white-space:pre-wrap;font:12px/1.5 ui-monospace,Menlo,monospace;color:#cdd8ea;background:#0a1526;padding:10px;border-radius:8px;overflow:auto}
 .withheld{color:var(--bad);font-size:13px;margin-top:8px}.hint{color:var(--muted);font-size:13px}
 .empty{color:var(--muted);text-align:center;margin-top:80px}
+.presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.pill{background:#0a1526;border:1px solid var(--line);color:var(--ink);border-radius:20px;padding:6px 12px;font-size:12px;cursor:pointer}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
 </style></head><body>
 <header><h1>fides <span style="color:var(--muted);font-weight:400">grounded content studio</span></h1>
 <div class=sub>Enter your data. Every number in every asset is verified against it — genuine kept, fabricated dropped.</div></header>
 <div class=wrap>
  <div class=left>
-  <label>Title</label><input id=title value="Apex Growth — FY2024">
+  <label>Preset datasets (6 domains)</label><div class=presets id=presets></div>
+  <label style="margin-top:16px">Title</label><input id=title value="Apex Growth — FY2024">
   <label>Source data (your facts)</label>
   <table id=rows></table>
   <button class=ghost onclick=addRow()>+ add data row</button>
@@ -109,11 +135,13 @@ pre{white-space:pre-wrap;font:12px/1.5 ui-monospace,Menlo,monospace;color:#cdd8e
  <div class=right id=out><div class=empty>Your grounded, verified assets will appear here.</div></div>
 </div>
 <script>
-const SEED=[["12.4%","Apex Growth","net return","FY2024"],["$1.2B","Apex Growth","AUM","FY2024"],["65 bps","Apex Growth","expense ratio",""],["9.8%","benchmark","return","FY2024"]];
+const PRESETS=/*PRESETS*/;
 function addRow(v){v=v||["","","",""];const t=document.getElementById('rows');const tr=document.createElement('tr');
  tr.innerHTML=`<td><input placeholder=value value="${v[0]}"></td><td><input placeholder=subject value="${v[1]}"></td><td><input placeholder=metric value="${v[2]}"></td><td style=width:64px><input placeholder=period value="${v[3]}"></td><td><button class=rowbtn onclick="this.closest('tr').remove()">×</button></td>`;
  t.appendChild(tr);}
-SEED.forEach(addRow);
+function loadPreset(i,run){const p=PRESETS[i];title.value=p.title;document.getElementById('rows').innerHTML='';p.rows.forEach(addRow);if(run)go();}
+PRESETS.forEach((p,i)=>{const b=document.createElement('button');b.className='pill';b.textContent=p.title;b.onclick=()=>loadPreset(i,true);document.getElementById('presets').appendChild(b);});
+loadPreset(0,false);
 function esc(s){return (s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
 async function go(){
  const facts=[...document.querySelectorAll('#rows tr')].map(tr=>{const i=tr.querySelectorAll('input');return {value:i[0].value,subject:i[1].value,metric:i[2].value,period:i[3].value};});
@@ -149,7 +177,7 @@ class H(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path in ("/", "/index.html"):
-            self._send(200, PAGE, "text/html")
+            self._send(200, PAGE.replace("/*PRESETS*/", json.dumps(PRESETS)), "text/html")
         else:
             self._send(404, json.dumps({"error": "not found"}))
 
