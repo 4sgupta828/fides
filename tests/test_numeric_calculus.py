@@ -67,6 +67,20 @@ class Calculus(unittest.TestCase):
         self.assertFalse(ledger.subjects_match("net return", "return"))
         self.assertTrue(ledger.subjects_match("return net", "net return"))
 
+    def test_named_unit_token_not_collapsed_to_count(self):
+        # regression: mg and mcg once both parsed as bare 'count' → 100 mg == 100 mcg (1000x dose escape)
+        self.assertFalse(ledger.units_congruent(ledger.parse_quantity("100 mg")["unit"], ledger.parse_quantity("100 mcg")["unit"]))
+        f = fact("d", "100 mg", "DrugX", "dose")
+        self.assertEqual(self.verdict(claim("100 mcg", src("d"), subject="DrugX", metric="dose"), [f])["code"], "unit_mismatch")
+        self.assertTrue(self.verdict(claim("100 mg", src("d"), subject="DrugX", metric="dose"), [f])["ok"])
+
+    def test_labeled_unit_self_congruent_and_bare_decimal_ships(self):
+        # a labeled unit verifies against itself (grounded-by-construction), unlike the old bare 'unknown'
+        self.assertTrue(ledger.units_congruent(ledger.parse_quantity("18.6 GW")["unit"], ledger.parse_quantity("9.1 GW")["unit"]))
+        for raw in ("18.6 GW", "1.94", "89"):
+            f = fact("x", raw, "grid", "cap")
+            self.assertTrue(self.verdict(claim(raw, src("x"), subject="grid", metric="cap"), [f])["ok"], raw)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -10,6 +10,20 @@ from ..manifest import UnitVocab, DEFAULT_VOCAB
 
 _NUM_RE = re.compile(r"-?\d[\d,]*(?:\.\d+)?")
 _MAG_RE = re.compile(r"\d\s*([a-z]{1,8})\b")
+_ALPHA_RE = re.compile(r"[a-z][a-z0-9]*")
+
+
+def _unit_token(low: str, vocab: UnitVocab) -> Optional[str]:
+    """The alphabetic unit token trailing a number (mg, mcg, gw, kwh), minus magnitude words.
+    A NAMED but unmodeled unit — code owns the STRUCTURE (there IS a distinct unit token), the model
+    never needs to; two such units are congruent iff their tokens match, so mg != mcg is caught while
+    gw == gw verifies. Returns None for a bare, dimensionless number."""
+    rest = _NUM_RE.sub(" ", low)
+    for tok in _ALPHA_RE.findall(rest):
+        if tok in vocab.magnitudes:
+            continue
+        return tok
+    return None
 
 
 def parse_quantity(raw: str, vocab: UnitVocab = DEFAULT_VOCAB) -> Optional[dict]:
@@ -48,20 +62,25 @@ def parse_quantity(raw: str, vocab: UnitVocab = DEFAULT_VOCAB) -> Optional[dict]
         elif re.search(r"\b(day|week|month|quarter|year)s?\b", low):
             b = re.search(r"\b(day|week|month|quarter|year)s?\b", low).group(1)
             unit = {"kind": "duration", "base": b}
-        elif value == math.trunc(value) or magnitude > 1:
-            unit = {"kind": "count"}
+        else:
+            tok = _unit_token(low, vocab)
+            # a labeled unit (mg, GW) is NEVER a bare count — preserve the token so mg != mcg is caught;
+            # a truly dimensionless number is a count (self-congruent, so grounded assets ship).
+            unit = {"kind": "unit", "token": tok} if tok else {"kind": "count"}
 
     return {"raw": t, "value": value, "unit": unit, "magnitude": magnitude,
             "canonical": value * scale, "scale": scale, "displayDecimals": decimals}
 
 
 def units_congruent(a: dict, b: dict) -> bool:
-    if a["kind"] == "unknown" or b["kind"] == "unknown":
+    if a["kind"] == "unknown" or b["kind"] == "unknown":  # truly-unknown fails closed
         return False
     if a["kind"] != b["kind"]:
         return False
     if a["kind"] == "currency":
         return a.get("code") == b.get("code")
+    if a["kind"] == "unit":                                # named-but-unmodeled: same token or bust
+        return a.get("token") == b.get("token")
     return True
 
 
