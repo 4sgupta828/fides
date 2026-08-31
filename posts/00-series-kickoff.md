@@ -47,6 +47,21 @@ Over the next seven posts I'll go deep on each system — the mechanism, the tra
 
 If you're building AI for a domain where being wrong is expensive, I think you're going to end up at this same architecture — so let's compare notes.
 
+## The reading list behind the bet
+
+The thesis isn't mine alone — it's what the literature keeps rediscovering across sub-fields that don't talk to each other:
+
+- **Ji et al. (2023)**, "Survey of Hallucination in NLG" (*ACM Computing Surveys*) — the shape of the whole problem.
+- **Menick et al. (2022, DeepMind)**, "Teaching LMs to Support Answers with Verified Quotes" (*GopherCite*) — verified-quote grounding, years early.
+- **Rashkin et al. (2023)**, "Measuring Attribution in NLG Models" (the **AIS** framework) — the formal case that *attribution ≠ correctness.*
+- **Min et al. (2023)**, "FActScore" — fine-grained factuality measurement.
+- **Yao et al. (2023)**, "ReAct" — reason-and-act agents.
+- **Ouyang et al. (2022)**, "InstructGPT" + **Perez et al. (2022)**, "Model-Written Evaluations" — how RLHF bought fluency and sold us sycophancy.
+- **Fellegi & Sunter (1969)**, "A Theory for Record Linkage" — the 55-year-old math under "are these the same entity?"
+- **Pearl (2009)**, "Causality" — why correlation-as-causation is a formal error, not an intuition gap.
+
+Different decades, different fields, one lesson: **the model proposes; something deterministic must dispose.**
+
 **Part 1 drops next: Fides — engineering faithfulness into AI.** Follow along.
 
 *(All seven are open source. Links in the comments.)*

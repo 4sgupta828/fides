@@ -148,9 +148,23 @@ That's the loop that matters: **an adversarial eval that finds your own bugs bef
 | RAG pipelines | A verification layer that catches the wrong-cell errors retrieval quality cannot |
 | Regulated reporting | An audit-trail generator that survives a regulator's "show me the source for this number" |
 
-## 10. To understand the space
+## 10. The provocation
 
-`FActScore` · `RAGAS` · `SelfCheckGPT` · `TruthfulQA` · Google's **Attributable to Identified Sources (AIS)** · the NLI / entailment literature. The throughline every one keeps rediscovering: **attribution ≠ correctness.** Provenance tells you a system didn't fabricate a span; it does not tell you the system picked the right one.
+> **We are benchmarking the wrong number.** "Reduces hallucinations by 40%" is a marketing metric — it optimizes error *rate*. In a regulated business the only number that matters is whether a *proven* fabrication can reach a human, and that number isn't supposed to trend down. It's supposed to be **zero.** A verifier that's 99% accurate ships a falsehood one time in a hundred; at enterprise volume that's not an edge case, it's a Tuesday. The entire field is optimizing an average when the business needs a guarantee — and averages and guarantees are different kinds of math. Scaling the model improves the average. Only architecture delivers the guarantee.
+
+## 11. Further reading (high-quality references)
+
+- **Ji et al. (2023)** — "Survey of Hallucination in Natural Language Generation." *ACM Computing Surveys.* The map of the whole problem.
+- **Menick et al. (2022, DeepMind)** — "Teaching Language Models to Support Answers with Verified Quotes" (*GopherCite*). The closest prior art to the verbatim-quote gate; read this one.
+- **Rashkin et al. (2023)** — "Measuring Attribution in Natural Language Generation Models" (the **AIS** framework). *Computational Linguistics.* The formal case that attribution ≠ correctness.
+- **Min et al. (2023)** — "FActScore: Fine-grained Atomic Evaluation of Factual Precision in Long-Form Text." *EMNLP.*
+- **Manakul et al. (2023)** — "SelfCheckGPT: Zero-Resource Black-Box Hallucination Detection." *EMNLP.*
+- **Dhuliawala et al. (2023)** — "Chain-of-Verification Reduces Hallucination in LLMs."
+- **Es et al. (2024)** — "RAGAS: Automated Evaluation of Retrieval-Augmented Generation." *EACL (demo).*
+- **Lin et al. (2022)** — "TruthfulQA: Measuring How Models Mimic Human Falsehoods." *ACL.*
+- **Anthropic (2025)** — "Introducing Citations on the Anthropic API" (product post) — the same instinct, productized.
+
+The throughline every one keeps rediscovering: **attribution ≠ correctness.** Provenance tells you a system didn't fabricate a span; it does not tell you the system picked the right one.
 
 ---
 
