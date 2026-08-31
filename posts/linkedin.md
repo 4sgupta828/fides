@@ -1,48 +1,115 @@
-# Fides — Can we stop AI from lying with numbers?
+# Fides: Treating "AI faithfulness" as a research problem, not a prompt
 
-*A LinkedIn post. Repo: https://github.com/4sgupta828/fides*
+*Repo: https://github.com/4sgupta828/fides · 118 tests · 0 fabrication-escapes on the adversarial suite · TS↔Python golden-vector parity*
 
 ---
 
-**The problem nobody wants to say out loud about "AI for the enterprise":**
+## The industry problem
 
-The demo is beautiful. The pilot ships. And then a generated report says a fund returned **12.4%** when the source says the *benchmark* did, or renders a **100 mg** dose as **100 mcg**, or quietly inflates "the data suggests" into "the #1 solution, guaranteed." Every one of those reads perfectly. A human reviewer misses it because it *looks* right.
+The GenAI demo is beautiful; the pilot ships; then a generated report says a fund returned **12.4%** when the source says the *benchmark* did — or renders a **100 mg** dose as **100 mcg** — and it reads perfectly. A human reviewer misses it because it *looks* right.
 
-This is the real blocker to AI in regulated, high-stakes work — finance, healthcare, legal, compliance. Not "is the model smart enough?" but **"can I prove this sentence is true to the source before it's published?"** Fluency is solved. Faithfulness is not.
+This is the real blocker to AI in finance, healthcare, legal, and compliance. Not "is the model smart enough?" but a governance question:
 
-**What I explored: Fides — a domain-agnostic faithfulness engine.**
+> **Can I prove this specific sentence is true to the source before it's published?**
 
-Instead of asking an LLM "is this hallucinated?" (asking the fox to guard the henhouse), Fides treats verification as a typed, deterministic problem wherever it can:
+Fluency is solved. **Faithfulness is not.** And the industry's default answer — "ask another LLM if it's hallucinated" — is asking the fox to audit the henhouse.
 
-- Every number becomes a typed **quantity** — value, unit, entity, period — and is verified against the actual source cell, or *recomputed* from its operands. Substring matching says "12.4% appears in the source ✓." The ledger says "12.4% belongs to the benchmark, not this fund ✗."
-- Every verdict speaks one currency: a **Finding**. Deterministic proofs can *drop* content; LLM-judge opinions can only *hold* it for review. That single distinction is the backbone.
-- One immovable rule: a **proven** fabrication is always dropped — no config dial overrides it.
+## Framed as a research problem
 
-Then the whole thing runs *backwards* as a generator: brainstorm a post/infographic/video from a customer's data, and because every figure is gated, the asset is grounded **by construction** — it literally cannot render a number that isn't in the data.
+| | |
+|---|---|
+| **Input** | Generated content (spans) + typed source (fact cells) |
+| **Output** | A per-claim decision: `keep · hold · drop`, with an audit trail |
+| **Objective** | Maximize *genuine recall* subject to a hard constraint: **fabrication-escape rate = 0** |
+| **Key tension** | It's trivial to drop everything (0 escapes, 0 recall). The science is *keeping the true and dropping only the false* — measured on held-out, adversarial data |
+| **Core hypothesis** | Faithfulness is not one problem. Split it: **code owns structure, the model owns meaning** — and never let either do the other's job |
 
-**What AI solves well here:**
-- Judging *meaning*: is this claim entailed by the evidence? is the quote attributed to the right person? is this an over-generalization? LLMs are genuinely good at this — as *judges*, not authors.
-- Drafting, then repairing against a critic that hands back the exact reason.
+## The architecture
 
-**What AI does NOT solve — and shouldn't be asked to:**
-- Structure and computation. Unit congruence, period matching, derivation recompute, IDs — that's *code's* job. The moment you ask a model to "check if 65 bps equals 0.65%," you've reintroduced the failure. Code owns structure; the model owns meaning; neither does the other's job.
+```mermaid
+flowchart LR
+    A["Generated spans<br/>(one claim each)"] --> G{{Gate}}
+    S["Typed source<br/>value·unit·entity·period"] --> G
+    G -->|numbers| N["NumericCheck<br/>deterministic"]
+    G -->|text+evidence| E["EntailmentCheck<br/>llm-judge"]
+    G -->|attribution| C["CongruenceCheck<br/>llm-judge"]
+    N --> F["Findings<br/>(shared currency)"]
+    E --> F
+    C --> F
+    F --> P["Policy table<br/>surface-aware"] --> D["keep · hold · drop"]
+    style N fill:#dcfce7,stroke:#16a34a,color:#000
+    style E fill:#e0f2fe,stroke:#0284c7,color:#000
+    style C fill:#e0f2fe,stroke:#0284c7,color:#000
+    style D fill:#fef9c3,stroke:#ca8a04,color:#000
+```
 
-**What stays genuinely hard:**
-- The wrong-but-real cell. A number that exists in the source but answers a different question is the hardest class — provenance ("this string exists") is necessary but never sufficient for correctness.
-- Measuring recall honestly: it's easy to drop everything and claim zero fabrications. The hard metric is *keep the genuine, drop only the fabricated* — which needs held-out, adversarial evals, not vibes.
+**Green = deterministic proof** (can drop content). **Blue = llm-judge opinion** (can only hold for review). That distinction is the whole backbone, and it's one immovable rule in code:
 
-**How to take it from here:**
-- Wire real LLM judges over a clean tool boundary; keep the deterministic core language-neutral (Fides ships TS↔Python golden-vector parity so the calculus can't silently drift).
-- Push the precision/recall harness into CI as a ship gate: fabrication-escape must stay at 0.
-- Expand typed checks beyond numbers — dates, named entities, citations.
+```python
+# a PROVEN fabrication is always dropped; no config dial overrides it
+def surface_policy(f, policy):
+    if f.kind == "deterministic" and f.groundedness == "false":
+        return "drop"
+    ...
+```
 
-**Products this could become:**
-- A "publish gate" API that sits between any GenAI system and its output surface.
-- A grounded content studio for finance/pharma marketing where compliance is structural.
-- A verification layer for RAG that catches the wrong-cell errors retrieval quality can't.
+The deterministic heart is a **numeric ledger** — it types every quantity and verifies *meaning*, not substring presence:
 
-**To understand this space better, look up:** FActScore, RAGAS, SelfCheckGPT, TruthfulQA, Google's "Attributable to Identified Sources (AIS)", and the NLI/entailment literature. The throughline: attribution ≠ correctness.
+```python
+verify_claim({"emitted": "65%",
+              "binding": {"kind": "source", "factId": "expense_ratio"}},  # source = 65 bps
+             facts, opts={"strict": True})
+# → {"ok": False, "code": "value_mismatch"}   # 65 bps ≠ 65%, caught. Substring match would PASS.
+```
 
-The uncomfortable takeaway: **the last mile of enterprise AI isn't a better model. It's a verifier the model isn't allowed to overrule.**
+## What one call does
 
-#AI #LLM #Trustworthy​AI #RAG #Fintech #HealthcareAI #MLOps
+```text
+Gate verdict — 2/4 spans published, 2 withheld
+  ✓ [keep] s1
+  ✓ [keep] s2  (derived: 26% YoY, recomputed from two source cells)
+  ✗ [drop] s3  (numeric: unbound)          ← a number in no source cell
+  ✗ [hold] s4  (entailment: unsupported superlative)   ← "best fund ever"
+```
+
+## What AI solves — and what it must never be asked to do
+
+| Task | Owner | Why |
+|---|---|---|
+| Is this claim entailed by the evidence? | **LLM (as judge)** | Meaning; models are good at this — as critics, not authors |
+| Is the quote attributed to the right entity? | **LLM (as judge)** | Semantic judgment |
+| Does `65 bps == 0.65%`? Is the period 2023 or 2024? | **Code** | Structure & computation — a model here *reintroduces* the bug |
+| Recompute a derived number from operands | **Code** | Determinism |
+| Final publish decision | **Policy table** | Auditable, not a vibe |
+
+## What stays genuinely hard (the open problems)
+
+1. **The wrong-but-real cell.** A number that exists in the source but answers a *different* question. Provenance ("this string exists") is necessary but never sufficient for correctness. Fides's own adversarial suite makes this its hardest class.
+2. **Honest recall measurement.** Anyone can report "zero fabrications." The falsifiable metric is a `dimension × surface-tier` precision/recall matrix with Wilson confidence intervals — escapes must be 0 *while* recall is maximized.
+3. **Cross-language drift.** The moment your calculus lives in two runtimes (a TS product + a Python service), they silently diverge. Fides pins 34 language-neutral golden vectors so they can't.
+
+## How to take it from here
+
+- Put the P/R harness in CI as a **ship gate** (escape rate must stay 0).
+- Wire real LLM judges over a clean tool boundary; keep the deterministic core language-neutral.
+- Extend typed checks beyond numbers → dates, named entities, citations, units-of-measure.
+- Run the verifier *backwards* as a generator: a grounded content studio where an infographic **cannot** render a figure that isn't in the data.
+
+## Use cases → products
+
+| Use case | Product shape |
+|---|---|
+| Any GenAI → publish surface | A "publish gate" API between the model and the world |
+| Pharma/finance marketing | Grounded content studio where compliance is *structural* |
+| RAG pipelines | A verification layer that catches wrong-cell errors retrieval can't |
+| Regulated reporting | An audit-trail generator ("source documentation for every figure") |
+
+## To understand this space better
+
+`FActScore` · `RAGAS` · `SelfCheckGPT` · `TruthfulQA` · Google's **Attributable to Identified Sources (AIS)** · the NLI/entailment literature. The throughline every one of them keeps rediscovering: **attribution ≠ correctness.**
+
+---
+
+*The uncomfortable takeaway: the last mile of enterprise AI isn't a better model — it's a verifier the model isn't allowed to overrule.*
+
+**#AI #LLM #TrustworthyAI #RAG #Fintech #HealthcareAI #MLOps #ProductManagement**
